@@ -457,6 +457,8 @@ When adding custom sections under `bonbon_area`, they automatically show in area
 
 When using custom cards, which have an entity which belongs to a different area, you can add `area_id: area_id` or `bonbon_area_id: area_id` to the card options to assign that card to one or more different areas so that it will show up in those areas instead. This will override the auto-detected area from the entity.
 
+For a card with no entity of its own that should appear identically in every area regardless (e.g. a `custom:navbar-card`, or any other purely presentational card), set `area_id: '*'` or `bonbon_area_id: '*'` on the card options — the same wildcard used in selectors above, applied to cards instead.
+
 Example:
 
 ```yaml
