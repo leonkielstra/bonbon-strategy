@@ -306,7 +306,8 @@ export function createEntityApi(ctx = {}) {
                   if (operator === '^=') return a.startsWith(val);
                   if (operator === '$=') return a.endsWith(val);
                   if (operator === '>' || operator === '>=' || operator === '<' || operator === '<=') {
-                    const cmp = a.localeCompare(val);
+                    const isNumeric = (value) => value.trim() !== '' && Number.isFinite(Number(value));
+                    const cmp = isNumeric(a) && isNumeric(val) ? Number(a) - Number(val) : a.localeCompare(val);
                     if (operator === '>') return cmp > 0;
                     if (operator === '>=') return cmp >= 0;
                     if (operator === '<') return cmp < 0;
