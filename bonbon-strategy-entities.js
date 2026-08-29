@@ -518,14 +518,6 @@ export function createEntityApi(ctx = {}) {
   }
 
   const cardMatchesAreaScope = (c, area, sectionConfig) => {
-    // `[area_id=*]` already lets a *selector* match in every area (see
-    // README's "Area-specific sections"). Object cards have no selector to
-    // put that on — resolveEntities() rebuilds them as { object: c.object },
-    // dropping any other key on the original entry — so a card meant to
-    // appear identically everywhere (e.g. a navbar) had no way to opt out of
-    // area scoping and was always silently dropped. Support the same `*`
-    // wildcard on the existing area_id/bonbon_area_id card options instead
-    // of introducing a new mechanism just for this.
     if (c.object?.bonbon_area_id === '*' || c.object?.area_id === '*') return true;
     return (
       c.object?.bonbon_area_id == area.area_id ||

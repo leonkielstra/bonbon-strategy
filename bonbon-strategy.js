@@ -5,7 +5,6 @@ const hacstag = new URL(import.meta.url).searchParams.get('hacstag');
 const { defaultConfig } = await import(`./bonbon-strategy-config.js?hacstag=${hacstag}`);
 const {
   getWeatherIcon,
-  androidGesturesFix,
   mergeDeep,
   getAreaColors,
   getColorsFromColor,
@@ -44,8 +43,6 @@ export class BonbonStrategy {
 
     globals.resolveEntities = resolveEntities;
     globals.resolveEntity = resolveEntity;
-
-    androidGesturesFix();
 
     try {
       const views = [];

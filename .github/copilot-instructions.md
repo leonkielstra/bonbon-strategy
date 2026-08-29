@@ -7,7 +7,7 @@ This repository implements a Home Assistant Lovelace "strategy" that generates a
   - [bonbon-strategy.js](bonbon-strategy.js#L1-L120) — main generator logic and view composition.
   - [bonbon-strategy-config.js](bonbon-strategy-config.js#L1-L200) — `defaultConfig` structure (views → sections → cards).
   - [bonbon-strategy-styles.js](bonbon-strategy-styles.js#L1-L80) — `getStyles(isDark)` and `css` helper for theme-aware styles.
-  - [bonbon-strategy-utils.js](bonbon-strategy-utils.js#L1-L200) — small helpers: `mergeDeep`, `getAllEntityIds`, `androidGesturesFix`.
+  - [bonbon-strategy-utils.js](bonbon-strategy-utils.js#L1-L200) — small helpers: `mergeDeep`, `getAllEntityIds`.
   - [bonbon-strategy-builders.js](bonbon-strategy-builders.js#L1-L200) — builder helpers used to assemble cards and sections from config fragments.
   - [bonbon-strategy-entities.js](bonbon-strategy-entities.js#L1-L200) — entity mapping, normalization and lookup helpers.
   - [bonbon-strategy-loader.js](bonbon-strategy-loader.js#L1-L40) — simple cache-busting loader used for local installs.

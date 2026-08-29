@@ -121,6 +121,7 @@ export function createStylesApi(panelUrl, config) {
         --bubble-state-climate-cool-color: ${cssValue('primary-accent-color')};
         --bubble-state-climate-heat-color: ${cssValue('primary-accent-color')};
         --bubble-state-climate-auto-color: ${cssValue('primary-accent-color')};
+        --bubble-sub-button-outline: transparent;
       }
     `;
     const bubbleAreaBase = css`
