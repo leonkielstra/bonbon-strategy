@@ -4,7 +4,7 @@ Bonbon Strategy is a Home Assistant strategy which automatically generates a col
 
 <img width="4270" alt="preview" src="preview.png?v=3" />
 
-- Left: Home View (with [Atmospheric Weather Card](https://github.com/shpongledsummer/atmospheric-weather-card))
+- Left: Home View (with Atmospheric Weather Card, which has been deleted after a lot of enshittification, unfortunately)
 - Middle: Area View (with [Mini Graph Card](https://github.com/kalkih/mini-graph-card))
 - Right: Custom View (with `binary_sensor.*contact[device_class=door]` and `...[device_class=window]`)
 
