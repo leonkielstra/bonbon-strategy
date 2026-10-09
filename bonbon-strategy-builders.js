@@ -315,6 +315,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
       return [
         {
           deviceGroup: {
+            device_id: deviceId,
             name: device?.name_by_user || device?.name || c.entity.device || 'Device',
             icon: states[c.entity.entity_id]?.attributes?.icon || 'mdi:devices',
             hash: '#bonbon-device-' + [panelUrl, viewKey, sectionConfig.key, deviceId].map(encodeURIComponent).join('/'),

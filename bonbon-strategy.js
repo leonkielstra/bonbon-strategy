@@ -367,6 +367,20 @@ export class BonbonStrategy {
                 : resolvedCards;
               const cards = groupedCards.map(function (c) {
                 if (c.deviceGroup) {
+                  const areaId = _areas.find((area) => viewKey === 'bonbon_area_' + area.area_id)?.area_id;
+                  const deviceEntities = resolveEntities(
+                    withAreaScope('*[device_id=' + c.deviceGroup.device_id + ']', areaId),
+                    sectionConfig,
+                    viewKey,
+                  );
+                  // Retain selected entities' hide rules and explicit filter overrides.
+                  const members = new Map(c.deviceGroup.members.map((member) => [member.c.entity.entity_id, member]));
+                  deviceEntities.forEach((entityCard) => {
+                    if (!members.has(entityCard.entity.entity_id)) {
+                      members.set(entityCard.entity.entity_id, { c: entityCard, sectionConfig });
+                    }
+                  });
+                  c.deviceGroup.members = [...members.values()];
                   const { button, popup } = createDeviceCards(c.deviceGroup);
                   popups.push(popup);
                   return button;
