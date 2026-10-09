@@ -71,7 +71,7 @@ test('device grouping is opt-in and preserves default entity cards', async () =>
   assert.ok(cards.some((card) => card.entity === 'button.oven_start'));
 });
 
-test('switch section generates one device launcher with the selected controls inside its popup', async () => {
+test('switch section generates one device launcher with all visible device entities inside its popup', async () => {
   const dashboard = await generate({ group_by_device: true });
   const view = dashboard.views.find((view) => view.path === 'bonbon_area_kitchen');
   const cards = cardsFor(view);
@@ -79,7 +79,7 @@ test('switch section generates one device launcher with the selected controls in
   assert.equal(cards.filter((card) => card.card_type === 'pop-up').length, 2);
   assert.equal(popup.name, 'My oven');
   assert.deepEqual(popup.cards.map((card) => card.entity).sort(), [
-    'button.oven_start', 'select.oven_mode', 'switch.oven_power',
+    'button.oven_start', 'select.oven_mode', 'sensor.oven_temperature', 'switch.oven_power',
   ]);
   const launcher = cards.find((card) => card.button_action?.tap_action?.action === 'navigate');
   assert.equal(launcher.button_action.tap_action.navigation_path, popup.hash);
@@ -102,17 +102,31 @@ test('switch section generates one device launcher with the selected controls in
   assert.ok(popup.cards.every((card) => card.styles), 'global styling reaches popup controls');
 });
 
-test('a device with only one selected switch still gets a device-named button and popup', async () => {
+test('one selected oven switch opens a popup with all visible oven entities', async () => {
   const dashboard = await generate({ group_by_device: true, cards: 'switch.oven_power' });
   const view = dashboard.views.find((view) => view.path === 'bonbon_area_kitchen');
   const cards = cardsFor(view);
   const popup = cards.find((card) => card.card_type === 'pop-up');
   assert.equal(popup.name, 'My oven');
-  assert.deepEqual(popup.cards.map((card) => card.entity), ['switch.oven_power']);
+  assert.deepEqual(popup.cards.map((card) => card.entity).sort(), [
+    'button.oven_start', 'select.oven_mode', 'sensor.oven_temperature', 'switch.oven_power',
+  ]);
   const launcher = cards.find((card) => card.button_action?.tap_action?.navigation_path === popup.hash);
   assert.equal(launcher.name, 'My oven');
   assert.equal(launcher.button_type, 'name');
   assert.equal(launcher.entity, undefined);
+});
+
+test('expanding a device popup preserves selected hide rules and excludes hidden, diagnostic and other-area entities', async () => {
+  const dashboard = await generate({ group_by_device: true, cards: 'switch.oven_power:hide([state=off])' });
+  const cards = cardsFor(dashboard.views.find((view) => view.path === 'bonbon_area_kitchen'));
+  const popup = cards.find((card) => card.card_type === 'pop-up');
+  const power = popup.cards.find((card) => card.entity === 'switch.oven_power');
+  assert.ok(power.styles.includes('[state=off]'));
+  assert.ok(popup.cards.some((card) => card.entity === 'sensor.oven_temperature'));
+  for (const excluded of ['switch.oven_hidden', 'switch.oven_diagnostic', 'switch.oven_other_area', 'switch.single']) {
+    assert.ok(!popup.cards.some((card) => card.entity === excluded), `${excluded} is excluded`);
+  }
 });
 
 test('explicit YAML cards remain outside device groups and duplicate selectors do not duplicate popup controls', async () => {
