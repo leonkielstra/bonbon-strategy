@@ -24,7 +24,7 @@ All modules are plain ES modules loaded in the browser. There is **no build step
 | `bonbon-strategy-entities.js` | `createEntityApi(ctx)` → entity prep, selector resolution, sorting, area/floor scoping. |
 | `README.md` | User-facing documentation. **Source of truth for config options** — update it whenever you add or change a user-facing option. |
 | `hacs.json` | HACS metadata (`filename: bonbon-strategy.js`). |
-| `tests/*.test.mjs` | Node.js tests; currently covers light card types, tap actions, and overrides. |
+| `tests/*.test.mjs` | Node.js tests; covers light card types, tap actions, overrides, and device popup generation. |
 | `.github/workflows/validate.yaml` | CI: `hacs/action` validation (daily + manual). Does not run tests, lint, or typecheck. |
 
 Local-only / gitignored (do not assume they ship): `bonbon-strategy-loader.js` (dev cache-busting loader that appends `?hacstag=<timestamp>`), `workspace.js` (commented-out scratch), `assets/`, `ftp*`, `.history/`.
@@ -52,6 +52,7 @@ Note: `console.log(dashboard)` runs at the end of `generate` — useful in the b
 - Cards in a section may be **entity selector strings**, YAML card objects, or a mix. Special token `area.<attribute>` (e.g. `area.temperature_entity_id`) is replaced by the current area's attribute during expansion.
 - `mergeDeep` deep-merges plain objects but **replaces arrays wholesale** (arrays are not treated as mergeable objects). This matters for `cards`, `inline_buttons`, etc.
 - Generated light cards use `states[entity_id].attributes.supported_color_modes` to choose brightness sliders for dimmable lights, including when off; other lights stay toggles. Explicit custom Bubble Card `button_type` settings override this choice.
+- Sections can opt into `group_by_device: true` (default `false`, exposed on `bonbon_switches`). Two or more distinct selector-generated entities from the same device become one launcher and a standalone Bubble Card popup (requires Bubble Card v3.2.0+). Grouping stays within the section; explicit YAML cards and single-entity devices stay unchanged. Popup controls retain runtime hiding without changing the parent section's visibility.
 - `upgradeConfig` maps legacy/renamed options onto the new shape (e.g. `show_weather_card`, `show_temperature`, `show_floor_lights_toggle`). When you rename or restructure a config option, add a back-compat mapping here.
 
 ## Entity selectors

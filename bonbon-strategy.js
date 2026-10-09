@@ -62,8 +62,16 @@ export class BonbonStrategy {
         : config.styles.primary_accent_color;
 
       const { css, observeDarkMode, cssValue, getStyles, getVariables } = createStylesApi(panelUrl, config);
-      const { createButtonCard, createSeparatorCard, createGrid, createSubButton, isTogglableEntity, hasBinaryState } =
-        createBuildersApi(panelUrl, config, hass.states);
+      const {
+        createButtonCard,
+        createSeparatorCard,
+        createGrid,
+        createSubButton,
+        isTogglableEntity,
+        hasBinaryState,
+        groupDeviceCards,
+        createDeviceCards,
+      } = createBuildersApi(panelUrl, config, hass.states);
 
       const styles = getStyles();
       const cssVars = getVariables();
@@ -352,7 +360,17 @@ export class BonbonStrategy {
                   `,
                 },
               };
-              const cards = resolveEntities(sectionConfig.cards, sectionConfig, viewKey).map(function (c) {
+              const popups = [];
+              const resolvedCards = resolveEntities(sectionConfig.cards, sectionConfig, viewKey);
+              const groupedCards = sectionConfig.group_by_device
+                ? groupDeviceCards(resolvedCards, sectionConfig, viewKey, hass.devices)
+                : resolvedCards;
+              const cards = groupedCards.map(function (c) {
+                if (c.deviceGroup) {
+                  const { button, popup } = createDeviceCards(c.deviceGroup);
+                  popups.push(popup);
+                  return button;
+                }
                 return createButtonCard(c, sectionConfig, {
                   show_graph: sectionConfig.show_graphs,
                   show_forecast: sectionConfig.show_forecast,
@@ -414,6 +432,7 @@ export class BonbonStrategy {
               }
               if (cards.length) {
                 section.cards.push(createGrid(cards, sectionConfig));
+                section.cards.push(...popups);
               }
               return section.cards.length ? section : false;
             })
