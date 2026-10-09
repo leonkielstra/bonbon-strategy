@@ -308,7 +308,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
     return cards.flatMap((c) => {
       const deviceId = !c.object && c.entity?.device_id;
       const members = groups.get(deviceId);
-      if (!members || members.size < 2) return [c];
+      if (!members) return [c];
       if (emitted.has(deviceId)) return [];
       emitted.add(deviceId);
       const device = devices[deviceId];
