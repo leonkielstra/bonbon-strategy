@@ -1,4 +1,4 @@
-export function createBuildersApi(panelUrl, config) {
+export function createBuildersApi(panelUrl, config, states = {}) {
   const isTogglableEntity = (c) => {
     return (
       c.entity?.entity_id?.startsWith('light.') ||
@@ -162,7 +162,13 @@ export function createBuildersApi(panelUrl, config) {
       const actions = getActions(c);
 
       if (isToggle) {
-        base.button_type = 'switch';
+        const colorModes = states[c.entity.entity_id]?.attributes?.supported_color_modes || [];
+        const isDimmableLight =
+          c.entity.entity_id.startsWith('light.') &&
+          colorModes.some((mode) =>
+            ['brightness', 'color_temp', 'hs', 'xy', 'rgb', 'rgbw', 'rgbww', 'white'].includes(mode),
+          );
+        base.button_type = isDimmableLight ? 'slider' : 'switch';
         if (actions.button == 'auto') {
           base.button_action.tap_action.action = 'toggle';
         } else {

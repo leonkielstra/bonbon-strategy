@@ -19,12 +19,13 @@ All modules are plain ES modules loaded in the browser. There is **no build step
 | `bonbon-strategy.js` | `BonbonStrategy.generate()` — orchestrates everything. Uses top-level `await` and `import.meta.url`. |
 | `bonbon-strategy-config.js` | Exports `defaultConfig` (the `views → sections → cards` tree). |
 | `bonbon-strategy-utils.js` | Color math (`getColorsFromColor`, `getAreaColors`, `getWeatherIcon`), `mergeDeep`, `normalizeSectionColumn`, `applySectionColumns`, `upgradeConfig`. |
-| `bonbon-strategy-builders.js` | `createBuildersApi(panelUrl, config)` → `createButtonCard`, `createSeparatorCard`, `createSubButton`, `createGrid`, `isTogglableEntity`, `hasBinaryState`. |
+| `bonbon-strategy-builders.js` | `createBuildersApi(panelUrl, config, states)` → `createButtonCard`, `createSeparatorCard`, `createSubButton`, `createGrid`, `isTogglableEntity`, `hasBinaryState`. |
 | `bonbon-strategy-styles.js` | `createStylesApi(panelUrl, config)` → `css`, `observeDarkMode`, `cssVariable`, `cssValue`, `getVariables`, `getStyles`. |
 | `bonbon-strategy-entities.js` | `createEntityApi(ctx)` → entity prep, selector resolution, sorting, area/floor scoping. |
 | `README.md` | User-facing documentation. **Source of truth for config options** — update it whenever you add or change a user-facing option. |
 | `hacs.json` | HACS metadata (`filename: bonbon-strategy.js`). |
-| `.github/workflows/validate.yaml` | CI: `hacs/action` validation (daily + manual). No tests, no lint, no typecheck. |
+| `tests/*.test.mjs` | Node.js tests; currently covers light card types, tap actions, and overrides. |
+| `.github/workflows/validate.yaml` | CI: `hacs/action` validation (daily + manual). Does not run tests, lint, or typecheck. |
 
 Local-only / gitignored (do not assume they ship): `bonbon-strategy-loader.js` (dev cache-busting loader that appends `?hacstag=<timestamp>`), `workspace.js` (commented-out scratch), `assets/`, `ftp*`, `.history/`.
 
@@ -50,6 +51,7 @@ Note: `console.log(dashboard)` runs at the end of `generate` — useful in the b
 - Section keys are meaningful: `bonbon_weather` and `bonbon_miscellaneous` have special handling in code, and `bonbon_area` sections use `area_id` scoping.
 - Cards in a section may be **entity selector strings**, YAML card objects, or a mix. Special token `area.<attribute>` (e.g. `area.temperature_entity_id`) is replaced by the current area's attribute during expansion.
 - `mergeDeep` deep-merges plain objects but **replaces arrays wholesale** (arrays are not treated as mergeable objects). This matters for `cards`, `inline_buttons`, etc.
+- Generated light cards use `states[entity_id].attributes.supported_color_modes` to choose brightness sliders for dimmable lights, including when off; other lights stay toggles. Explicit custom Bubble Card `button_type` settings override this choice.
 - `upgradeConfig` maps legacy/renamed options onto the new shape (e.g. `show_weather_card`, `show_temperature`, `show_floor_lights_toggle`). When you rename or restructure a config option, add a back-compat mapping here.
 
 ## Entity selectors
@@ -87,7 +89,7 @@ Parsed in `resolveEntities` (`bonbon-strategy-entities.js`):
 
 ## Testing / validating changes
 
-There is no test suite. Validate by:
+Run all tests with `node --test tests/*.test.mjs` (Node.js 22 or newer, no dependencies). Add new test files as `tests/<name>.test.mjs` so the same command includes them automatically. The current tests verify generated card configuration; dashboard rendering and slider interaction still need Home Assistant. Validate those by:
 
 1. Loading the strategy in a real Home Assistant instance (HACS install, or copy the `bonbon-strategy-*.js` files to `<config>/www/` and add `/local/bonbon-strategy.js` as a resource, then clear the frontend cache).
 2. Checking the browser console — `generate` logs the dashboard, and thrown errors surface as an "Error" view.
