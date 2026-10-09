@@ -62,16 +62,8 @@ export class BonbonStrategy {
         : config.styles.primary_accent_color;
 
       const { css, observeDarkMode, cssValue, getStyles, getVariables } = createStylesApi(panelUrl, config);
-      const {
-        createButtonCard,
-        createSeparatorCard,
-        createGrid,
-        createSubButton,
-        isTogglableEntity,
-        hasBinaryState,
-        groupDeviceCards,
-        createDeviceCards,
-      } = createBuildersApi(panelUrl, config, hass.states);
+      const { createButtonCard, createSeparatorCard, createGrid, createSubButton, isTogglableEntity, hasBinaryState } =
+        createBuildersApi(panelUrl, config, hass.states);
 
       const styles = getStyles();
       const cssVars = getVariables();
@@ -360,31 +352,7 @@ export class BonbonStrategy {
                   `,
                 },
               };
-              const popups = [];
-              const resolvedCards = resolveEntities(sectionConfig.cards, sectionConfig, viewKey);
-              const groupedCards = sectionConfig.group_by_device
-                ? groupDeviceCards(resolvedCards, sectionConfig, viewKey, hass.devices)
-                : resolvedCards;
-              const cards = groupedCards.map(function (c) {
-                if (c.deviceGroup) {
-                  const areaId = _areas.find((area) => viewKey === 'bonbon_area_' + area.area_id)?.area_id;
-                  const deviceEntities = resolveEntities(
-                    withAreaScope('*[device_id=' + c.deviceGroup.device_id + ']', areaId),
-                    sectionConfig,
-                    viewKey,
-                  );
-                  // Retain selected entities' hide rules and explicit filter overrides.
-                  const members = new Map(c.deviceGroup.members.map((member) => [member.c.entity.entity_id, member]));
-                  deviceEntities.forEach((entityCard) => {
-                    if (!members.has(entityCard.entity.entity_id)) {
-                      members.set(entityCard.entity.entity_id, { c: entityCard, sectionConfig });
-                    }
-                  });
-                  c.deviceGroup.members = [...members.values()];
-                  const { button, popup } = createDeviceCards(c.deviceGroup);
-                  popups.push(popup);
-                  return button;
-                }
+              const cards = resolveEntities(sectionConfig.cards, sectionConfig, viewKey).map(function (c) {
                 return createButtonCard(c, sectionConfig, {
                   show_graph: sectionConfig.show_graphs,
                   show_forecast: sectionConfig.show_forecast,
@@ -446,7 +414,6 @@ export class BonbonStrategy {
               }
               if (cards.length) {
                 section.cards.push(createGrid(cards, sectionConfig));
-                section.cards.push(...popups);
               }
               return section.cards.length ? section : false;
             })

@@ -59,39 +59,6 @@ You can add the label `graph` to render the entity using Mini Graph Card instead
 
 You can add the prefix `bonbon_` to any of these labels in case it interferes with your setup.
 
-### Device popups
-
-To group devices in the area dashboard’s **Switches & Buttons** section:
-
-```yaml
-strategy:
-  type: custom:bonbon-strategy
-  options:
-    views:
-      bonbon_area:
-        sections:
-          bonbon_switches:
-            group_by_device: true
-```
-
-`group_by_device` is a section option and defaults to `false`. It can also be enabled on other sections.
-When enabled, every device with selected entities in that section gets one device-named button that opens a
-Bubble Card popup. The button occupies the first entity's position, and its popup contains all visible entities
-belonging to that device, including sensors and other domains outside the section's selectors. On area dashboards,
-additional popup entities are limited to the current area. Duplicate entities appear once in the popup. Entities
-in other sections keep their existing placement. The button uses the device's user-assigned name, falling back to its default name.
-
-The popup retains the entities' normal controls, graphs, actions, and runtime `:hide()` rules. Device buttons
-remain visible even when all their popup entities are temporarily hidden. Section selectors determine which devices
-get buttons. Additional popup entities use the normal hidden/diagnostic/config filtering; entities explicitly
-selected by the section retain their filter overrides and runtime hiding. Devices with
-only one selected entity also get a device button and popup. Entities without a device and explicit YAML cards
-keep their existing cards.
-Separator buttons are unchanged. Sections left with no cards are omitted unless `show_if_empty` is enabled.
-
-Device popups use the [standalone popup format](https://github.com/Clooos/Bubble-Card#pop-up) and require Bubble Card
-v3.2.0 or newer.
-
 ## Dependencies
 
 This dashboard strategy needs [Bubble Card](https://github.com/Clooos/Bubble-Card).
@@ -219,7 +186,6 @@ strategy:
         sections:
           section_key:
             # Common section properties
-            group_by_device: false # group selected device entities in a popup (Bubble Card v3.2.0+)
             name: 'Display Name'
             icon: 'mdi:icon-name'
             column: auto # fixed view column (1..n) or auto, will be stacked on mobile
