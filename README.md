@@ -569,3 +569,13 @@ views:
                   background: var(--bonbon-card-background);
                   border: none;
 ```
+
+## Development tests
+
+With Node.js 22 or newer, run all tests from the repository root (no dependencies required):
+
+```sh
+node --test tests/*.test.mjs
+```
+
+Add new tests as `tests/<name>.test.mjs`; the same command includes them automatically. The current tests check generated card configuration. Rendering and slider interaction still need validation in Home Assistant.

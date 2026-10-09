@@ -24,7 +24,7 @@ All modules are plain ES modules loaded in the browser. There is **no build step
 | `bonbon-strategy-entities.js` | `createEntityApi(ctx)` → entity prep, selector resolution, sorting, area/floor scoping. |
 | `README.md` | User-facing documentation. **Source of truth for config options** — update it whenever you add or change a user-facing option. |
 | `hacs.json` | HACS metadata (`filename: bonbon-strategy.js`). |
-| `tests/light-cards.test.mjs` | Node.js tests for light card types, tap actions, and overrides. |
+| `tests/*.test.mjs` | Node.js tests; currently covers light card types, tap actions, and overrides. |
 | `.github/workflows/validate.yaml` | CI: `hacs/action` validation (daily + manual). Does not run tests, lint, or typecheck. |
 
 Local-only / gitignored (do not assume they ship): `bonbon-strategy-loader.js` (dev cache-busting loader that appends `?hacstag=<timestamp>`), `workspace.js` (commented-out scratch), `assets/`, `ftp*`, `.history/`.
@@ -89,7 +89,7 @@ Parsed in `resolveEntities` (`bonbon-strategy-entities.js`):
 
 ## Testing / validating changes
 
-Run the light card tests with `node --test tests/light-cards.test.mjs` (Node.js 22 or newer, no dependencies). These verify generated card configuration; dashboard rendering and slider interaction still need Home Assistant. Validate those by:
+Run all tests with `node --test tests/*.test.mjs` (Node.js 22 or newer, no dependencies). Add new test files as `tests/<name>.test.mjs` so the same command includes them automatically. The current tests verify generated card configuration; dashboard rendering and slider interaction still need Home Assistant. Validate those by:
 
 1. Loading the strategy in a real Home Assistant instance (HACS install, or copy the `bonbon-strategy-*.js` files to `<config>/www/` and add `/local/bonbon-strategy.js` as a resource, then clear the frontend cache).
 2. Checking the browser console — `generate` logs the dashboard, and thrown errors surface as an "Error" view.
