@@ -24,7 +24,7 @@ All modules are plain ES modules loaded in the browser. There is **no build step
 | `bonbon-strategy-entities.js` | `createEntityApi(ctx)` → entity prep, selector resolution, sorting, area/floor scoping. |
 | `README.md` | User-facing documentation. **Source of truth for config options** — update it whenever you add or change a user-facing option. |
 | `hacs.json` | HACS metadata (`filename: bonbon-strategy.js`). |
-| `tests/*.test.mjs` | Node.js tests; currently covers light card types, tap actions, and overrides. |
+| `tests/*.test.mjs` | Node.js tests; covers light card types, tap actions, overrides, and device popups. |
 | `.github/workflows/validate.yaml` | CI: `hacs/action` validation (daily + manual). Does not run tests, lint, or typecheck. |
 
 Local-only / gitignored (do not assume they ship): `bonbon-strategy-loader.js` (dev cache-busting loader that appends `?hacstag=<timestamp>`), `workspace.js` (commented-out scratch), `assets/`, `ftp*`, `.history/`.
@@ -52,6 +52,7 @@ Note: `console.log(dashboard)` runs at the end of `generate` — useful in the b
 - Cards in a section may be **entity selector strings**, YAML card objects, or a mix. Special token `area.<attribute>` (e.g. `area.temperature_entity_id`) is replaced by the current area's attribute during expansion.
 - `mergeDeep` deep-merges plain objects but **replaces arrays wholesale** (arrays are not treated as mergeable objects). This matters for `cards`, `inline_buttons`, etc.
 - Generated light cards use `states[entity_id].attributes.supported_color_modes` to choose brightness sliders for dimmable lights, including when off; other lights stay toggles. Explicit custom Bubble Card `button_type` settings override this choice.
+- Sections may opt into `group_by_device: true` (default `false`, exposed on `bonbon_switches`). Section selectors choose devices; `getDeviceEntities` collects enabled device entities with states directly from registry membership, including diagnostic readings but excluding hidden/configuration entities. `createDeviceCards` makes a name button and a Bubble Card v3.2.0+ popup with one native Entities card. Popup contents skip global Bonbon styling and use native row controls. YAML cards, entities without devices, and `:hide()` cards retain individual rendering; other sections stay unchanged.
 - `upgradeConfig` maps legacy/renamed options onto the new shape (e.g. `show_weather_card`, `show_temperature`, `show_floor_lights_toggle`). When you rename or restructure a config option, add a back-compat mapping here.
 
 ## Entity selectors

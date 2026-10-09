@@ -291,7 +291,32 @@ export function createBuildersApi(panelUrl, config, states = {}) {
       cards: cardsArray,
     };
   };
+
+  const createDeviceCards = (device, entityIds, hash) => {
+    const name = device.name_by_user || device.name || 'Device';
+    const action = { action: 'navigate', navigation_path: hash };
+    return {
+      button: createButtonCard(null, {}, {
+        name,
+        icon: 'mdi:devices',
+        show_state: false,
+        tap_action: { ...action },
+        button_action: { tap_action: { ...action } },
+      }),
+      popup: {
+        type: 'custom:bubble-card',
+        card_type: 'pop-up',
+        button_type: 'name',
+        name,
+        icon: 'mdi:devices',
+        hash,
+        cards: [{ type: 'entities', show_header_toggle: false, entities: entityIds }],
+      },
+    };
+  };
+
   return {
+    createDeviceCards,
     isTogglableEntity,
     hasBinaryState,
     createButtonCard,

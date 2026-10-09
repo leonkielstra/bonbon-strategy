@@ -59,6 +59,38 @@ You can add the label `graph` to render the entity using Mini Graph Card instead
 
 You can add the prefix `bonbon_` to any of these labels in case it interferes with your setup.
 
+### Device popups
+
+Group devices in an area's **Switches & Buttons** section with:
+
+```yaml
+strategy:
+  type: custom:bonbon-strategy
+  options:
+    views:
+      bonbon_area:
+        sections:
+          bonbon_switches:
+            group_by_device: true
+```
+
+`group_by_device` defaults to `false` and can be enabled on any section. Its selectors determine which devices
+get buttons. Each device gets one named button, even if only one entity matches the section.
+
+Tapping the button opens a Bubble Card popup containing **one standard Home Assistant Entities card**. Its rows
+come directly from device membership, across all domains and entity area assignments. For example, selecting
+an oven's switch also includes its temperature sensor, mode selector, and buttons. Diagnostic readings are
+included; hidden entities (including `hidden` labels), disabled entities, configuration entities, and entities
+without a state are excluded. An unavailable entity still has a state entry and remains in the list.
+
+The popup uses native row controls and styling. Section graph settings, Bonbon action overrides, and runtime
+`:hide()` rules are not applied to its rows. Explicit YAML cards, entities without devices, and selectors with
+`:hide()` retain their existing individual cards. Other sections and separator buttons keep their existing
+placement. Buttons follow the first selected entity's position; popup rows use Bonbon's normal entity ordering.
+
+Requires [Bubble Card v3.2.0+](https://github.com/Clooos/Bubble-Card#pop-up). Update all strategy modules together
+and reload with a fresh `hacstag` after installing a change.
+
 ## Dependencies
 
 This dashboard strategy needs [Bubble Card](https://github.com/Clooos/Bubble-Card).
@@ -186,6 +218,7 @@ strategy:
         sections:
           section_key:
             # Common section properties
+            group_by_device: false # one device button opening a compact entity list (Bubble Card v3.2.0+)
             name: 'Display Name'
             icon: 'mdi:icon-name'
             column: auto # fixed view column (1..n) or auto, will be stacked on mobile

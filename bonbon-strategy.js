@@ -31,6 +31,7 @@ export class BonbonStrategy {
       withAreaScope,
       withFloorScope,
       cardMatchesAreaScope,
+      getDeviceEntities,
     } = createEntityApi({
       entities: hass.entities,
       devices: hass.devices,
@@ -62,8 +63,15 @@ export class BonbonStrategy {
         : config.styles.primary_accent_color;
 
       const { css, observeDarkMode, cssValue, getStyles, getVariables } = createStylesApi(panelUrl, config);
-      const { createButtonCard, createSeparatorCard, createGrid, createSubButton, isTogglableEntity, hasBinaryState } =
-        createBuildersApi(panelUrl, config, hass.states);
+      const {
+        createButtonCard,
+        createSeparatorCard,
+        createGrid,
+        createSubButton,
+        isTogglableEntity,
+        hasBinaryState,
+        createDeviceCards,
+      } = createBuildersApi(panelUrl, config, hass.states);
 
       const styles = getStyles();
       const cssVars = getVariables();
@@ -352,11 +360,27 @@ export class BonbonStrategy {
                   `,
                 },
               };
-              const cards = resolveEntities(sectionConfig.cards, sectionConfig, viewKey).map(function (c) {
-                return createButtonCard(c, sectionConfig, {
-                  show_graph: sectionConfig.show_graphs,
-                  show_forecast: sectionConfig.show_forecast,
-                });
+              const popups = [];
+              const seenDevices = new Set();
+              const cards = resolveEntities(sectionConfig.cards, sectionConfig, viewKey).flatMap(function (c) {
+                const deviceId = c.entity?.device_id;
+                if (sectionConfig.group_by_device && !c.object && !c.hide && hass.devices?.[deviceId]) {
+                  if (seenDevices.has(deviceId)) return [];
+                  const entityIds = getDeviceEntities(deviceId, sectionConfig, viewKey);
+                  if (entityIds.length) {
+                    seenDevices.add(deviceId);
+                    const hash = '#bonbon-device-' + [panelUrl, viewKey, key, deviceId].map(encodeURIComponent).join('/');
+                    const { button, popup } = createDeviceCards(hass.devices[deviceId], entityIds, hash);
+                    popups.push(popup);
+                    return [button];
+                  }
+                }
+                return [
+                  createButtonCard(c, sectionConfig, {
+                    show_graph: sectionConfig.show_graphs,
+                    show_forecast: sectionConfig.show_forecast,
+                  }),
+                ];
               });
 
               if (!sectionConfig.hide_separator && (cards.length || sectionConfig.show_if_empty)) {
@@ -414,6 +438,7 @@ export class BonbonStrategy {
               }
               if (cards.length) {
                 section.cards.push(createGrid(cards, sectionConfig));
+                section.cards.push(...popups);
               }
               return section.cards.length ? section : false;
             })
@@ -471,6 +496,10 @@ export class BonbonStrategy {
         if (!Array.isArray(data)) return data;
         return data.map((struct) => {
           let newStruct = { ...struct };
+          // Popups and their native contents retain Bubble Card / HA layout and styling.
+          if (newStruct.type === 'custom:bubble-card' && newStruct.card_type === 'pop-up') {
+            return newStruct;
+          }
           if (newStruct.type && newStruct.type.startsWith('custom:bubble-card')) {
             const inferredBonbonStyles = getInferredBubbleStyles(newStruct);
             const allBonbonStyles = [...(newStruct.bonbon_styles || []), ...inferredBonbonStyles].filter(

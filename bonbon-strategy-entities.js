@@ -587,7 +587,27 @@ export function createEntityApi(ctx = {}) {
     return false;
   }
 
+  // Device details use registry membership, independent of the section's domain selectors.
+  function getDeviceEntities(deviceId, sectionConfig = {}, viewScope = '') {
+    return sortEntities(
+      Object.values(context.entities)
+        .filter(
+          (entity) =>
+            entity.device_id === deviceId &&
+            context.states[entity.entity_id] &&
+            !entity.disabled_by &&
+            !entity.disabled &&
+            entity.entity_category !== 'config' &&
+            !isHidden({ entity }, sectionConfig, viewScope),
+        )
+        .map((entity) => ({ entity })),
+      sectionConfig,
+      viewScope,
+    ).map(({ entity }) => entity.entity_id);
+  }
+
   return {
+    getDeviceEntities,
     getLabels,
     prepareEntities,
     sortByName,
