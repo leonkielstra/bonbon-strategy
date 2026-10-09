@@ -291,6 +291,69 @@ export function createBuildersApi(panelUrl, config, states = {}) {
       cards: cardsArray,
     };
   };
+
+  // Group only selector-generated cards; explicit YAML cards retain their placement.
+  const groupDeviceCards = (cards, sectionConfig, viewKey, devices = {}) => {
+    const groups = new Map();
+    cards.forEach((c) => {
+      if (!c.object && c.entity?.device_id) {
+        const deviceId = c.entity.device_id;
+        if (!groups.has(deviceId)) groups.set(deviceId, new Map());
+        const members = groups.get(deviceId);
+        if (!members.has(c.entity.entity_id)) members.set(c.entity.entity_id, { c, sectionConfig });
+      }
+    });
+
+    const emitted = new Set();
+    return cards.flatMap((c) => {
+      const deviceId = !c.object && c.entity?.device_id;
+      const members = groups.get(deviceId);
+      if (!members || members.size < 2) return [c];
+      if (emitted.has(deviceId)) return [];
+      emitted.add(deviceId);
+      const device = devices[deviceId];
+      return [
+        {
+          deviceGroup: {
+            name: device?.name_by_user || device?.name || c.entity.device || 'Device',
+            icon: states[c.entity.entity_id]?.attributes?.icon || 'mdi:devices',
+            hash: '#bonbon-device-' + [panelUrl, viewKey, sectionConfig.key, deviceId].map(encodeURIComponent).join('/'),
+            members: [...members.values()],
+          },
+        },
+      ];
+    });
+  };
+
+  const createDeviceCards = (group) => {
+    const action = { action: 'navigate', navigation_path: group.hash };
+    return {
+      button: createButtonCard(null, {}, {
+        name: group.name,
+        icon: group.icon,
+        show_state: false,
+        tap_action: { ...action },
+        button_action: { tap_action: { ...action } },
+      }),
+      popup: {
+        type: 'custom:bubble-card',
+        card_type: 'pop-up',
+        hash: group.hash,
+        name: group.name,
+        icon: group.icon,
+        cards: group.members.map(({ c, sectionConfig }) =>
+          createButtonCard(
+            c,
+            { ...sectionConfig, show_if_empty: true },
+            {
+              show_graph: sectionConfig.show_graphs,
+              show_forecast: sectionConfig.show_forecast,
+            },
+          ),
+        ),
+      },
+    };
+  };
   return {
     isTogglableEntity,
     hasBinaryState,
@@ -298,5 +361,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
     createSeparatorCard,
     createSubButton,
     createGrid,
+    groupDeviceCards,
+    createDeviceCards,
   };
 }

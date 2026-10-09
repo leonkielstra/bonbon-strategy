@@ -142,6 +142,7 @@ export const defaultConfig = {
         },
         bonbon_switches: {
           name: 'Switches & Buttons',
+          group_by_device: false,
           icon: 'mdi:toggle-switch',
           order: 4,
           column: 'auto',
