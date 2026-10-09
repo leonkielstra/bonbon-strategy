@@ -75,8 +75,8 @@ test('switch section generates one device launcher with the selected controls in
   const dashboard = await generate({ group_by_device: true });
   const view = dashboard.views.find((view) => view.path === 'bonbon_area_kitchen');
   const cards = cardsFor(view);
-  const popup = cards.find((card) => card.card_type === 'pop-up');
-  assert.equal(cards.filter((card) => card.card_type === 'pop-up').length, 1);
+  const popup = cards.find((card) => card.card_type === 'pop-up' && card.name === 'My oven');
+  assert.equal(cards.filter((card) => card.card_type === 'pop-up').length, 2);
   assert.equal(popup.name, 'My oven');
   assert.deepEqual(popup.cards.map((card) => card.entity).sort(), [
     'button.oven_start', 'select.oven_mode', 'switch.oven_power',
@@ -96,8 +96,23 @@ test('switch section generates one device launcher with the selected controls in
   const outsidePopup = flatten(view.sections.flatMap((section) => section.cards)
     .filter((card) => card.card_type !== 'pop-up'));
   assert.equal(outsidePopup.filter((card) => card.entity === 'switch.oven_power').length, 0);
+  assert.equal(outsidePopup.filter((card) => card.entity === 'switch.single').length, 0);
+  assert.ok(outsidePopup.some((card) => card.name === 'Single' && card.button_type === 'name'));
   assert.ok(popup.styles, 'global styling reaches popup');
   assert.ok(popup.cards.every((card) => card.styles), 'global styling reaches popup controls');
+});
+
+test('a device with only one selected switch still gets a device-named button and popup', async () => {
+  const dashboard = await generate({ group_by_device: true, cards: 'switch.oven_power' });
+  const view = dashboard.views.find((view) => view.path === 'bonbon_area_kitchen');
+  const cards = cardsFor(view);
+  const popup = cards.find((card) => card.card_type === 'pop-up');
+  assert.equal(popup.name, 'My oven');
+  assert.deepEqual(popup.cards.map((card) => card.entity), ['switch.oven_power']);
+  const launcher = cards.find((card) => card.button_action?.tap_action?.navigation_path === popup.hash);
+  assert.equal(launcher.name, 'My oven');
+  assert.equal(launcher.button_type, 'name');
+  assert.equal(launcher.entity, undefined);
 });
 
 test('explicit YAML cards remain outside device groups and duplicate selectors do not duplicate popup controls', async () => {
@@ -120,8 +135,8 @@ test('popup hashes differ across sections and views', async () => {
     } },
   });
   const hashes = dashboard.views.flatMap(cardsFor).filter((card) => card.card_type === 'pop-up').map((card) => card.hash);
-  assert.equal(hashes.length, 3);
-  assert.equal(new Set(hashes).size, 3);
+  assert.equal(hashes.length, 5);
+  assert.equal(new Set(hashes).size, 5);
 });
 
 test('popup controls retain hide rules without hiding the parent dashboard section', () => {
