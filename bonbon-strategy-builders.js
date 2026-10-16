@@ -113,6 +113,9 @@ export function createBuildersApi(panelUrl, config, states = {}) {
         tap_action: { action: 'none' },
       },
     };
+    const appendStyle = (style) => {
+      base.styles = [base.styles, style].filter(Boolean).join('\n');
+    };
     if (c?.entity) {
       base.name = c.entity?.name;
       if (sectionConfig?.prefix && c.entity[sectionConfig?.prefix]) {
@@ -120,7 +123,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
       }
       base.entity = c.entity?.entity_id;
       if (base.entity && c?.hide) {
-        base.styles =
+        appendStyle(
           '${hass.entities["' +
           base.entity +
           '"] && this.parentElement ? "' +
@@ -146,7 +149,8 @@ export function createBuildersApi(panelUrl, config, states = {}) {
               '", "calc(var(--bonbon-' +
               panelUrl +
               '-row-gap) * -1)"))}'
-            : '');
+            : ''),
+        );
       }
 
       const isClimate = c.entity.entity_id.startsWith('climate.');
@@ -170,9 +174,14 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           );
         if (isDimmableLight) {
           base.button_type = 'slider';
-          base.slider_value_position = 'right';
+          appendStyle(`
+            .bubble-button-background,
+            .is-on .bubble-button-background {
+              background-color: var(--ha-card-background, var(--card-background-color, #fff)) !important;
+            }
+          `);
         } else {
-         base.button_type = 'switch'
+          base.button_type = 'switch';
         }
         if (actions.button == 'auto') {
           base.button_action.tap_action.action = 'toggle';
