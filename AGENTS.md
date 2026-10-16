@@ -51,7 +51,7 @@ Note: `console.log(dashboard)` runs at the end of `generate` — useful in the b
 - Section keys are meaningful: `bonbon_weather` and `bonbon_miscellaneous` have special handling in code, and `bonbon_area` sections use `area_id` scoping.
 - Cards in a section may be **entity selector strings**, YAML card objects, or a mix. Special token `area.<attribute>` (e.g. `area.temperature_entity_id`) is replaced by the current area's attribute during expansion.
 - `mergeDeep` deep-merges plain objects but **replaces arrays wholesale** (arrays are not treated as mergeable objects). This matters for `cards`, `inline_buttons`, etc.
-- Generated light cards use `states[entity_id].attributes.supported_color_modes` to choose brightness sliders for dimmable lights, including when off; other lights stay toggles. Explicit custom Bubble Card `button_type` settings override this choice.
+- Generated light cards use `states[entity_id].attributes.supported_color_modes` to choose brightness sliders for dimmable lights, including when off; sliders show the value on the right, and other lights stay toggles. Explicit Bubble Card options override generated settings.
 - `upgradeConfig` maps legacy/renamed options onto the new shape (e.g. `show_weather_card`, `show_temperature`, `show_floor_lights_toggle`). When you rename or restructure a config option, add a back-compat mapping here.
 
 ## Entity selectors

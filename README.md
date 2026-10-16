@@ -53,7 +53,7 @@ To sort entities in several different views and/or sections independently and di
 
 You can add the label `nightlight` to lights to exclude them from area and floor toggles.
 
-Light cards use Home Assistant's `supported_color_modes` to detect dimming support, including when a light is off. Lights without reported dimming support stay toggles. Explicit `button_type` settings on custom Bubble Cards override this automatic choice.
+Light cards use Home Assistant's `supported_color_modes` to detect dimming support, including when a light is off. Dimmable lights use a slider that displays the current brightness percentage on the right. Lights without reported dimming support stay toggles. Explicit Bubble Card options can override the generated slider settings.
 
 You can add the label `graph` to render the entity using Mini Graph Card instead of Bubble Card (if installed).
 

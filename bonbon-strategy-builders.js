@@ -168,7 +168,12 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           colorModes.some((mode) =>
             ['brightness', 'color_temp', 'hs', 'xy', 'rgb', 'rgbw', 'rgbww', 'white'].includes(mode),
           );
-        base.button_type = isDimmableLight ? 'slider' : 'switch';
+        if (isDimmableLight) {
+          base.button_type = 'slider';
+          base.slider_value_position = 'right';
+        } else {
+         base.button_type = 'switch'
+        }
         if (actions.button == 'auto') {
           base.button_action.tap_action.action = 'toggle';
         } else {
