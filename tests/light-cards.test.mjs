@@ -24,6 +24,7 @@ for (const mode of dimmableModes) {
       assert.equal(card.type, 'custom:bubble-card');
       assert.equal(card.card_type, 'button');
       assert.equal(card.button_type, 'slider');
+      assert.equal(card.styles, undefined);
       assert.equal(card.entity, 'light.test');
       assert.equal(card.button_action.tap_action.action, 'toggle');
       assert.equal(card.tap_action.action, 'toggle');

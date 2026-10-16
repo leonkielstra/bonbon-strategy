@@ -73,6 +73,7 @@ Parsed in `resolveEntities` (`bonbon-strategy-entities.js`):
 
 - `createStylesApi` namespaces every CSS variable per dashboard: `--bonbon-<panelUrl>-<suffix>` (`cssVariable` / `cssValue`).
 - Dark mode is detected from `meta[name="color-scheme"]` via a `MutationObserver` (`observeDarkMode`), not from a `getStyles(isDark)` argument.
+- `bubbleGlobal` styles on-state buttons but excludes Bubble Card range sliders from the full-accent background rule so their native proportional fill remains visible.
 - `getStyles()` returns named fragments concatenated onto generated cards: `cardmodGlobal`, `bubbleGlobal`, `bubbleAreaBase`, `bubbleButtonNonBinary`, `bubbleSeparatorSubButtonBase`, `bubbleSeparatorLightsSubButtonAlways`, `bubbleSeparatorLightsSubButtonDefault`, `bubbleAreaSubButtonDefault`, `bubbleAreaSubButtonAlways`, `graphCard`, `haCardBase`. Cards opt in via `bonbon_styles: [...]`.
 - Public CSS variables exposed to users for `card-mod`: `--bonbon-box-shadow`, `--bonbon-border-radius`, `--bonbon-card-background`, `--bonbon-primary-text-color`, `--bonbon-primary-accent-color`.
 

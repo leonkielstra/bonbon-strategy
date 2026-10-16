@@ -174,12 +174,6 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           );
         if (isDimmableLight) {
           base.button_type = 'slider';
-          appendStyle(`
-            .bubble-button-background,
-            .is-on .bubble-button-background {
-              background-color: var(--ha-card-background, var(--card-background-color, #fff)) !important;
-            }
-          `);
         } else {
           base.button_type = 'switch';
         }
