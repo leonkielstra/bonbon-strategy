@@ -113,6 +113,9 @@ export function createBuildersApi(panelUrl, config, states = {}) {
         tap_action: { action: 'none' },
       },
     };
+    const appendStyle = (style) => {
+      base.styles = [base.styles, style].filter(Boolean).join('\n');
+    };
     if (c?.entity) {
       base.name = c.entity?.name;
       if (sectionConfig?.prefix && c.entity[sectionConfig?.prefix]) {
@@ -120,7 +123,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
       }
       base.entity = c.entity?.entity_id;
       if (base.entity && c?.hide) {
-        base.styles =
+        appendStyle(
           '${hass.entities["' +
           base.entity +
           '"] && this.parentElement ? "' +
@@ -146,7 +149,8 @@ export function createBuildersApi(panelUrl, config, states = {}) {
               '", "calc(var(--bonbon-' +
               panelUrl +
               '-row-gap) * -1)"))}'
-            : '');
+            : ''),
+        );
       }
 
       const isClimate = c.entity.entity_id.startsWith('climate.');
@@ -168,7 +172,37 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           colorModes.some((mode) =>
             ['brightness', 'color_temp', 'hs', 'xy', 'rgb', 'rgbw', 'rgbww', 'white'].includes(mode),
           );
-        base.button_type = isDimmableLight ? 'slider' : 'switch';
+        if (isDimmableLight) {
+          base.button_type = 'slider';
+          base.icon = 'mdi:power';
+          base.force_icon = false;
+          base.show_name = true;
+          base.show_icon = true;
+          base.slider_live_update = true;
+          base.slider_fill_orientation = 'left';
+          base.tap_to_slide = true;
+          base.relative_slide = false;
+          base.use_accent_color = false;
+          base.sub_button = {
+            main: [
+              {
+                entity: base.entity,
+                icon: 'mdi:information',
+                name: 'Info',
+                sub_button_type: 'default',
+                scrolling_effect: false,
+                show_background: true,
+                show_icon: true,
+                light_background: false,
+                state_background: false,
+                tap_action: { action: 'more-info' },
+              },
+            ],
+          };
+          delete base.show_state;
+        } else {
+          base.button_type = 'switch';
+        }
         if (actions.button == 'auto') {
           base.button_action.tap_action.action = 'toggle';
         } else {
@@ -197,7 +231,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
         base.tap_action.action = base.button_action.tap_action.action;
       }
 
-      if (isToggle || isBinary) {
+      if ((isToggle || isBinary) && base.button_type !== 'slider') {
         base.show_last_changed = true;
       }
       if (isPerson) {

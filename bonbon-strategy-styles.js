@@ -303,8 +303,8 @@ export function createStylesApi(panelUrl, config) {
           .is-on .bubble-climate {
             --icon-primary-color: #fff;
           }
-          .is-on .bubble-button-background,
-          .is-on .bubble-background {
+          .is-on:not(:has(.bubble-range-fill)) .bubble-button-background,
+          .is-on:not(:has(.bubble-range-fill)) .bubble-background {
             background-color: ${cssValue('primary-accent-color')} !important;
             filter: none !important;
             opacity: 1 !important;
