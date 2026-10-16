@@ -231,7 +231,7 @@ export function createStylesApi(panelUrl, config) {
           .bubble-climate-container,
           .bubble-cover-container,
           .bubble-media-player-container,
-          .bubble-button-background {
+          .bubble-button-card-container:not(.bubble-button-slider-container) .bubble-button-background {
             background-color: ${cssValue('card-background')} !important;
             opacity: 1 !important;
           }
@@ -303,8 +303,8 @@ export function createStylesApi(panelUrl, config) {
           .is-on .bubble-climate {
             --icon-primary-color: #fff;
           }
-          .is-on:not(:has(.bubble-range-fill)) .bubble-button-background,
-          .is-on:not(:has(.bubble-range-fill)) .bubble-background {
+          .is-on:not(.bubble-button-slider-container):not(:has(.bubble-button-slider-container)) .bubble-button-background,
+          .is-on:not(.bubble-button-slider-container):not(:has(.bubble-button-slider-container)) .bubble-background {
             background-color: ${cssValue('primary-accent-color')} !important;
             filter: none !important;
             opacity: 1 !important;
