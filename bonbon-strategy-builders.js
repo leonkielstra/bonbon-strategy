@@ -174,6 +174,32 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           );
         if (isDimmableLight) {
           base.button_type = 'slider';
+          base.icon = 'mdi:power';
+          base.force_icon = false;
+          base.show_name = true;
+          base.show_icon = true;
+          base.slider_live_update = true;
+          base.slider_fill_orientation = 'left';
+          base.tap_to_slide = true;
+          base.relative_slide = false;
+          base.use_accent_color = false;
+          base.sub_button = {
+            main: [
+              {
+                entity: base.entity,
+                icon: 'mdi:information',
+                name: 'Info',
+                sub_button_type: 'default',
+                scrolling_effect: false,
+                show_background: true,
+                show_icon: true,
+                light_background: false,
+                state_background: false,
+                tap_action: { action: 'more-info' },
+              },
+            ],
+          };
+          delete base.show_state;
         } else {
           base.button_type = 'switch';
         }
@@ -205,7 +231,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
         base.tap_action.action = base.button_action.tap_action.action;
       }
 
-      if (isToggle || isBinary) {
+      if ((isToggle || isBinary) && base.button_type !== 'slider') {
         base.show_last_changed = true;
       }
       if (isPerson) {

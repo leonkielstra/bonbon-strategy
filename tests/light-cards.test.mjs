@@ -55,6 +55,38 @@ test('color light with multiple supported modes renders as a slider', () => {
   assert.equal(card.button_type, 'slider');
 });
 
+test('dimmable light slider uses the configured Bubble Card pattern', () => {
+  const card = buildLight({ supported_color_modes: ['brightness'] });
+
+  assert.equal(card.icon, 'mdi:power');
+  assert.equal(card.force_icon, false);
+  assert.equal(card.show_name, true);
+  assert.equal(card.show_icon, true);
+  assert.equal(card.slider_live_update, true);
+  assert.equal(card.slider_fill_orientation, 'left');
+  assert.equal(card.tap_to_slide, true);
+  assert.equal(card.relative_slide, false);
+  assert.equal(card.use_accent_color, false);
+  assert.equal(card.show_state, undefined);
+  assert.equal(card.show_last_changed, undefined);
+  assert.deepEqual(card.sub_button, {
+    main: [
+      {
+        entity: 'light.test',
+        icon: 'mdi:information',
+        name: 'Info',
+        sub_button_type: 'default',
+        scrolling_effect: false,
+        show_background: true,
+        show_icon: true,
+        light_background: false,
+        state_background: false,
+        tap_action: { action: 'more-info' },
+      },
+    ],
+  });
+});
+
 test('switch entities stay toggles', () => {
   const { createButtonCard } = createBuildersApi('test', {});
   const card = createButtonCard({ entity: { entity_id: 'switch.test' } });
