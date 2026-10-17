@@ -53,6 +53,8 @@ To sort entities in several different views and/or sections independently and di
 
 You can add the label `nightlight` to lights to exclude them from area and floor toggles.
 
+Area card titles on the home screen have the scrolling text effect disabled.
+
 Light cards use Home Assistant's `supported_color_modes` to detect dimming support, including when a light is off. Dimmable lights use Bubble Card's brightness slider with live updates, tap-to-slide, a fill that follows the light's color and brightness, and an Info sub-button. Lights without reported dimming support stay toggles. Explicit Bubble Card options can override the generated slider settings.
 
 You can add the label `graph` to render the entity using Mini Graph Card instead of Bubble Card (if installed).
