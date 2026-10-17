@@ -164,52 +164,66 @@ export function createBuildersApi(panelUrl, config, states = {}) {
       const isBinary = hasBinaryState(c) || (options?.card_type && options?.card_type != 'button');
 
       const actions = getActions(c);
+      const colorModes = states[c.entity.entity_id]?.attributes?.supported_color_modes || [];
+      const isDimmableLight =
+        c.entity.entity_id.startsWith('light.') &&
+        colorModes.some((mode) =>
+          ['brightness', 'color_temp', 'hs', 'xy', 'rgb', 'rgbw', 'rgbww', 'white'].includes(mode),
+        );
 
       if (isToggle) {
-        const colorModes = states[c.entity.entity_id]?.attributes?.supported_color_modes || [];
-        const isDimmableLight =
-          c.entity.entity_id.startsWith('light.') &&
-          colorModes.some((mode) =>
-            ['brightness', 'color_temp', 'hs', 'xy', 'rgb', 'rgbw', 'rgbww', 'white'].includes(mode),
-          );
         if (isDimmableLight) {
-          base.button_type = 'slider';
-          base.icon = 'mdi:power';
-          base.force_icon = false;
+          base.button_type = 'state';
+          base.scrolling_effect = false;
           base.show_name = true;
           base.show_icon = true;
-          base.slider_live_update = true;
-          base.slider_fill_orientation = 'left';
-          base.tap_to_slide = true;
-          base.relative_slide = false;
-          base.use_accent_color = false;
+          base.rows = 1.719;
           base.sub_button = {
             main: [
               {
                 entity: base.entity,
-                icon: 'mdi:information',
-                name: 'Info',
-                sub_button_type: 'default',
-                scrolling_effect: false,
+                icon: 'mdi:power-cycle',
                 show_background: true,
-                show_icon: true,
                 light_background: false,
-                state_background: false,
-                tap_action: { action: 'more-info' },
+                show_icon: true,
+                hide_when_parent_unavailable: false,
+                tap_action: { action: 'toggle' },
+              },
+            ],
+            bottom: [
+              {
+                entity: base.entity,
+                sub_button_type: 'slider',
+                state_background: true,
+                state_content: 'brightness',
+                light_background: true,
+                show_icon: false,
+                show_background: true,
+                scrolling_effect: false,
+                slider_live_update: true,
+                relative_slide: false,
+                tap_to_slide: false,
+                use_accent_color: false,
+                allow_light_slider_to_0: false,
+                light_transition: true,
+                fill_width: true,
+                always_visible: true,
+                show_button_info: false,
               },
             ],
           };
           delete base.show_state;
+          delete base.use_accent_color;
         } else {
           base.button_type = 'switch';
         }
         if (actions.button == 'auto') {
-          base.button_action.tap_action.action = 'toggle';
+          base.button_action.tap_action.action = isDimmableLight ? 'more-info' : 'toggle';
         } else {
           base.button_action.tap_action.action = actions.button;
         }
         if (actions.icon == 'auto') {
-          base.tap_action.action = 'toggle';
+          base.tap_action.action = isDimmableLight ? 'more-info' : 'toggle';
         } else {
           base.tap_action.action = actions.icon;
         }
@@ -231,7 +245,7 @@ export function createBuildersApi(panelUrl, config, states = {}) {
         base.tap_action.action = base.button_action.tap_action.action;
       }
 
-      if ((isToggle || isBinary) && base.button_type !== 'slider') {
+      if ((isToggle || isBinary) && !isDimmableLight) {
         base.show_last_changed = true;
       }
       if (isPerson) {
