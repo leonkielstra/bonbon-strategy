@@ -202,6 +202,7 @@ export class BonbonStrategy {
             const areaCard = createButtonCard(null, sectionConfig, {
               icon: area.icon,
               show_state: false,
+              scrolling_effect: false,
               name: area.name.split(' (')[0],
               button_action: {
                 tap_action: {
