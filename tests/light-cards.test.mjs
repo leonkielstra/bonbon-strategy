@@ -26,8 +26,8 @@ for (const mode of dimmableModes) {
       assert.equal(card.button_type, 'state');
       assert.equal(card.styles, undefined);
       assert.equal(card.entity, 'light.test');
-      assert.equal(card.button_action.tap_action.action, 'more-info');
-      assert.equal(card.tap_action.action, 'more-info');
+      assert.equal(card.button_action.tap_action.action, 'toggle');
+      assert.equal(card.tap_action.action, 'toggle');
       assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
       assert.equal(card.sub_button.bottom[0].entity, 'light.test');
     });
@@ -118,21 +118,31 @@ test('explicit button type overrides automatic selection', () => {
   assert.equal(card.button_type, 'switch');
 });
 
+test('automatic icon and card actions toggle dimmable lights', () => {
+  const card = buildLight(
+    { supported_color_modes: ['brightness'] },
+    { config: { actions: { default: { button: 'auto', icon: 'auto' } } } },
+  );
+
+  assert.equal(card.button_action.tap_action.action, 'toggle');
+  assert.equal(card.tap_action.action, 'toggle');
+});
+
 test('configured tap actions are preserved on dimmable light cards', () => {
   const card = buildLight(
     { supported_color_modes: ['brightness'] },
     {
       config: {
         actions: {
-          light: { button: 'toggle', icon: 'toggle' },
+          light: { button: 'more-info', icon: 'more-info' },
         },
       },
     },
   );
 
   assert.equal(card.button_type, 'state');
-  assert.equal(card.button_action.tap_action.action, 'toggle');
-  assert.equal(card.tap_action.action, 'toggle');
+  assert.equal(card.button_action.tap_action.action, 'more-info');
+  assert.equal(card.tap_action.action, 'more-info');
 });
 
 test('custom YAML cards are preserved', () => {

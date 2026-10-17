@@ -218,12 +218,12 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           base.button_type = 'switch';
         }
         if (actions.button == 'auto') {
-          base.button_action.tap_action.action = isDimmableLight ? 'more-info' : 'toggle';
+          base.button_action.tap_action.action = 'toggle';
         } else {
           base.button_action.tap_action.action = actions.button;
         }
         if (actions.icon == 'auto') {
-          base.tap_action.action = isDimmableLight ? 'more-info' : 'toggle';
+          base.tap_action.action = 'toggle';
         } else {
           base.tap_action.action = actions.icon;
         }
