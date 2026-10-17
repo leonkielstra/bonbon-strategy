@@ -134,7 +134,7 @@ export const defaultConfig = {
           column: 'auto',
           hide_separator: false,
           min_columns: 1,
-          max_columns: 2,
+          max_columns: 1,
           disabled: false,
           cards: 'light.*',
           separator_buttons: 'light.*:not([label=nightlight])',
