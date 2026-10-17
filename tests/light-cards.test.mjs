@@ -26,8 +26,8 @@ for (const mode of dimmableModes) {
       assert.equal(card.button_type, 'state');
       assert.equal(card.styles, undefined);
       assert.equal(card.entity, 'light.test');
-      assert.equal(card.button_action.tap_action.action, 'more-info');
-      assert.equal(card.tap_action.action, 'more-info');
+      assert.equal(card.button_action.tap_action.action, 'toggle');
+      assert.equal(card.tap_action.action, 'toggle');
       assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
       assert.equal(card.sub_button.bottom[0].entity, 'light.test');
     });
@@ -58,7 +58,7 @@ test('color light with multiple supported modes renders as a slider', () => {
   assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
 });
 
-test('dimmable light uses a tall state card with power and brightness controls', () => {
+test('dimmable light uses a tall state card with only a bottom brightness control', () => {
   const card = buildLight({ supported_color_modes: ['brightness'] });
 
   assert.equal(card.icon, undefined);
@@ -72,17 +72,6 @@ test('dimmable light uses a tall state card with power and brightness controls',
   assert.equal(card.show_state, undefined);
   assert.equal(card.show_last_changed, undefined);
   assert.deepEqual(card.sub_button, {
-    main: [
-      {
-        entity: 'light.test',
-        icon: 'mdi:power-cycle',
-        show_background: true,
-        light_background: false,
-        show_icon: true,
-        hide_when_parent_unavailable: false,
-        tap_action: { action: 'toggle' },
-      },
-    ],
     bottom: [
       {
         entity: 'light.test',
@@ -118,21 +107,31 @@ test('explicit button type overrides automatic selection', () => {
   assert.equal(card.button_type, 'switch');
 });
 
+test('automatic icon and card actions toggle dimmable lights', () => {
+  const card = buildLight(
+    { supported_color_modes: ['brightness'] },
+    { config: { actions: { default: { button: 'auto', icon: 'auto' } } } },
+  );
+
+  assert.equal(card.button_action.tap_action.action, 'toggle');
+  assert.equal(card.tap_action.action, 'toggle');
+});
+
 test('configured tap actions are preserved on dimmable light cards', () => {
   const card = buildLight(
     { supported_color_modes: ['brightness'] },
     {
       config: {
         actions: {
-          light: { button: 'toggle', icon: 'toggle' },
+          light: { button: 'more-info', icon: 'more-info' },
         },
       },
     },
   );
 
   assert.equal(card.button_type, 'state');
-  assert.equal(card.button_action.tap_action.action, 'toggle');
-  assert.equal(card.tap_action.action, 'toggle');
+  assert.equal(card.button_action.tap_action.action, 'more-info');
+  assert.equal(card.tap_action.action, 'more-info');
 });
 
 test('custom YAML cards are preserved', () => {
