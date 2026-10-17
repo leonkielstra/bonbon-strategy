@@ -58,7 +58,7 @@ test('color light with multiple supported modes renders as a slider', () => {
   assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
 });
 
-test('dimmable light uses a tall state card with power and brightness controls', () => {
+test('dimmable light uses a tall state card with only a bottom brightness control', () => {
   const card = buildLight({ supported_color_modes: ['brightness'] });
 
   assert.equal(card.icon, undefined);
@@ -72,17 +72,6 @@ test('dimmable light uses a tall state card with power and brightness controls',
   assert.equal(card.show_state, undefined);
   assert.equal(card.show_last_changed, undefined);
   assert.deepEqual(card.sub_button, {
-    main: [
-      {
-        entity: 'light.test',
-        icon: 'mdi:power-cycle',
-        show_background: true,
-        light_background: false,
-        show_icon: true,
-        hide_when_parent_unavailable: false,
-        tap_action: { action: 'toggle' },
-      },
-    ],
     bottom: [
       {
         entity: 'light.test',

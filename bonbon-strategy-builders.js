@@ -179,17 +179,6 @@ export function createBuildersApi(panelUrl, config, states = {}) {
           base.show_icon = true;
           base.rows = 1.719;
           base.sub_button = {
-            main: [
-              {
-                entity: base.entity,
-                icon: 'mdi:power-cycle',
-                show_background: true,
-                light_background: false,
-                show_icon: true,
-                hide_when_parent_unavailable: false,
-                tap_action: { action: 'toggle' },
-              },
-            ],
             bottom: [
               {
                 entity: base.entity,
