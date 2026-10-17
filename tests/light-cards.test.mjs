@@ -14,7 +14,7 @@ const dimmableModes = ['brightness', 'color_temp', 'hs', 'xy', 'rgb', 'rgbw', 'r
 
 for (const mode of dimmableModes) {
   for (const state of ['on', 'off']) {
-    test(`${mode} light renders as a slider when ${state}`, () => {
+    test(`${mode} light renders with a bottom brightness slider when ${state}`, () => {
       // Off lights need no current brightness value.
       const attributes = { supported_color_modes: [mode] };
       if (state === 'on') attributes.brightness = 128;
@@ -23,11 +23,13 @@ for (const mode of dimmableModes) {
 
       assert.equal(card.type, 'custom:bubble-card');
       assert.equal(card.card_type, 'button');
-      assert.equal(card.button_type, 'slider');
+      assert.equal(card.button_type, 'state');
       assert.equal(card.styles, undefined);
       assert.equal(card.entity, 'light.test');
-      assert.equal(card.button_action.tap_action.action, 'toggle');
-      assert.equal(card.tap_action.action, 'toggle');
+      assert.equal(card.button_action.tap_action.action, 'more-info');
+      assert.equal(card.tap_action.action, 'more-info');
+      assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
+      assert.equal(card.sub_button.bottom[0].entity, 'light.test');
     });
   }
 }
@@ -52,36 +54,54 @@ test('color light with multiple supported modes renders as a slider', () => {
     supported_color_modes: ['color_temp', 'hs'],
     brightness: null,
   });
-  assert.equal(card.button_type, 'slider');
+  assert.equal(card.button_type, 'state');
+  assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
 });
 
-test('dimmable light slider uses the configured Bubble Card pattern', () => {
+test('dimmable light uses a tall state card with power and brightness controls', () => {
   const card = buildLight({ supported_color_modes: ['brightness'] });
 
-  assert.equal(card.icon, 'mdi:power');
-  assert.equal(card.force_icon, false);
+  assert.equal(card.icon, undefined);
+  assert.equal(card.scrolling_effect, false);
   assert.equal(card.show_name, true);
   assert.equal(card.show_icon, true);
-  assert.equal(card.slider_live_update, true);
-  assert.equal(card.slider_fill_orientation, 'left');
-  assert.equal(card.tap_to_slide, true);
-  assert.equal(card.relative_slide, false);
-  assert.equal(card.use_accent_color, false);
+  assert.equal(card.rows, 1.719);
+  assert.equal(card.slider_live_update, undefined);
+  assert.equal(card.tap_to_slide, undefined);
+  assert.equal(card.use_accent_color, undefined);
   assert.equal(card.show_state, undefined);
   assert.equal(card.show_last_changed, undefined);
   assert.deepEqual(card.sub_button, {
     main: [
       {
         entity: 'light.test',
-        icon: 'mdi:information',
-        name: 'Info',
-        sub_button_type: 'default',
-        scrolling_effect: false,
+        icon: 'mdi:power-cycle',
         show_background: true,
-        show_icon: true,
         light_background: false,
-        state_background: false,
-        tap_action: { action: 'more-info' },
+        show_icon: true,
+        hide_when_parent_unavailable: false,
+        tap_action: { action: 'toggle' },
+      },
+    ],
+    bottom: [
+      {
+        entity: 'light.test',
+        sub_button_type: 'slider',
+        state_background: true,
+        state_content: 'brightness',
+        light_background: true,
+        show_icon: false,
+        show_background: true,
+        scrolling_effect: false,
+        slider_live_update: true,
+        relative_slide: false,
+        tap_to_slide: false,
+        use_accent_color: false,
+        allow_light_slider_to_0: false,
+        light_transition: true,
+        fill_width: true,
+        always_visible: true,
+        show_button_info: false,
       },
     ],
   });
@@ -98,21 +118,21 @@ test('explicit button type overrides automatic selection', () => {
   assert.equal(card.button_type, 'switch');
 });
 
-test('configured tap actions are preserved on sliders', () => {
+test('configured tap actions are preserved on dimmable light cards', () => {
   const card = buildLight(
     { supported_color_modes: ['brightness'] },
     {
       config: {
         actions: {
-          light: { button: 'more-info', icon: 'more-info' },
+          light: { button: 'toggle', icon: 'toggle' },
         },
       },
     },
   );
 
-  assert.equal(card.button_type, 'slider');
-  assert.equal(card.button_action.tap_action.action, 'more-info');
-  assert.equal(card.tap_action.action, 'more-info');
+  assert.equal(card.button_type, 'state');
+  assert.equal(card.button_action.tap_action.action, 'toggle');
+  assert.equal(card.tap_action.action, 'toggle');
 });
 
 test('custom YAML cards are preserved', () => {
