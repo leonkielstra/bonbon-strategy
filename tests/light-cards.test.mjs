@@ -28,6 +28,8 @@ for (const mode of dimmableModes) {
       assert.equal(card.entity, 'light.test');
       assert.equal(card.button_action.tap_action.action, 'toggle');
       assert.equal(card.tap_action.action, 'toggle');
+      assert.equal(card.button_action.hold_action.action, 'more-info');
+      assert.equal(card.hold_action.action, 'more-info');
       assert.equal(card.sub_button.bottom[0].sub_button_type, 'slider');
       assert.equal(card.sub_button.bottom[0].entity, 'light.test');
     });
@@ -38,6 +40,8 @@ for (const modes of [['onoff'], ['unknown'], []]) {
   test(`light with modes ${JSON.stringify(modes)} stays a toggle`, () => {
     const card = buildLight({ supported_color_modes: modes });
     assert.equal(card.button_type, 'switch');
+    assert.equal(card.button_action.hold_action.action, 'more-info');
+    assert.equal(card.hold_action.action, 'more-info');
   });
 }
 
@@ -100,6 +104,27 @@ test('switch entities stay toggles', () => {
   const { createButtonCard } = createBuildersApi('test', {});
   const card = createButtonCard({ entity: { entity_id: 'switch.test' } });
   assert.equal(card.button_type, 'switch');
+  assert.equal(card.button_action.hold_action, undefined);
+  assert.equal(card.hold_action, undefined);
+});
+
+test('explicit hold actions override light defaults', () => {
+  const card = buildLight(
+    { supported_color_modes: ['brightness'] },
+    {
+      overrides: {
+        hold_action: { action: 'none' },
+        button_action: {
+          tap_action: { action: 'toggle' },
+          hold_action: { action: 'none' },
+        },
+      },
+    },
+  );
+
+  assert.equal(card.hold_action.action, 'none');
+  assert.equal(card.button_action.hold_action.action, 'none');
+  assert.equal(card.button_action.tap_action.action, 'toggle');
 });
 
 test('explicit button type overrides automatic selection', () => {

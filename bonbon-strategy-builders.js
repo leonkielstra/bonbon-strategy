@@ -122,6 +122,10 @@ export function createBuildersApi(panelUrl, config, states = {}) {
         base.name = c.entity[sectionConfig?.prefix] + ' ' + base.name;
       }
       base.entity = c.entity?.entity_id;
+      if (base.entity?.startsWith('light.')) {
+        base.hold_action = { action: 'more-info' };
+        base.button_action.hold_action = { action: 'more-info' };
+      }
       if (base.entity && c?.hide) {
         appendStyle(
           '${hass.entities["' +

@@ -57,7 +57,7 @@ Area card titles on the home screen have the scrolling text effect disabled.
 
 Home-screen area cards have no light sub-buttons by default. Floor separators still provide light controls; area cards keep their inline environment indicators. Use `sub_buttons` to add optional controls to area cards.
 
-Light cards use Home Assistant's `supported_color_modes` to detect dimming support, including when a light is off. Dimmable lights use taller Bubble Card state buttons with an always-visible brightness slider underneath. Tapping the main card or its icon toggles the light by default; configured actions can override this. Titles do not scroll. The Lights section shows up to two cards per row. Lights without reported dimming support stay toggles. Explicit Bubble Card options can override the generated settings.
+Light cards use Home Assistant's `supported_color_modes` to detect dimming support, including when a light is off. Dimmable lights use taller Bubble Card state buttons with an always-visible brightness slider underneath. Tapping the main card or its icon toggles the light by default; configured actions can override this. Long-pressing a light card or its icon opens the light's more-info dialog. Titles do not scroll. The Lights section shows up to two cards per row. Lights without reported dimming support stay toggles. Explicit Bubble Card options can override the generated settings.
 
 You can add the label `graph` to render the entity using Mini Graph Card instead of Bubble Card (if installed).
 
