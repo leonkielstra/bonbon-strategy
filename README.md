@@ -55,6 +55,8 @@ You can add the label `nightlight` to lights to exclude them from area and floor
 
 Area card titles on the home screen have the scrolling text effect disabled.
 
+Home-screen area cards have no light sub-buttons by default. Floor separators still provide light controls; area cards keep their inline environment indicators. Use `sub_buttons` to add optional controls to area cards.
+
 Light cards use Home Assistant's `supported_color_modes` to detect dimming support, including when a light is off. Dimmable lights use taller Bubble Card state buttons with an always-visible brightness slider underneath. Tapping the main card or its icon toggles the light by default; configured actions can override this. Titles do not scroll. The Lights section shows up to two cards per row. Lights without reported dimming support stay toggles. Explicit Bubble Card options can override the generated settings.
 
 You can add the label `graph` to render the entity using Mini Graph Card instead of Bubble Card (if installed).
@@ -213,8 +215,8 @@ strategy:
           bonbon_areas:
             separator_buttons: light.*:not([label=nightlight]) # lights to be included on floor separators, floor_id is implied if missing
             separator_combine_lights: 'when-on' # smartly combine lights into a single toggle on floor separators ('when-on' | 'always' | false), will discard all entities that aren't lights
-            sub_buttons: light.*:not([label=nightlight]) # lights to be included on area cards, area_id is implied if missing
-            sub_combine_lights: 'when-on' # smartly combine lights into a single toggle on area cards ('when-on' | 'always' | false), will discard all entities that aren't lights
+            sub_buttons: [] # optional controls on area cards, disabled by default; area_id is implied if missing
+            sub_combine_lights: false # optionally combine selected lights into a single toggle ('when-on' | 'always' | false)
 
       bonbon_area:
         sections:

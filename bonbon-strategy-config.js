@@ -64,8 +64,8 @@ export const defaultConfig = {
           bonbon_colors: true,
           separator_buttons: 'light.*:not([label=nightlight])',
           separator_combine_lights: 'when-on',
-          sub_buttons: 'light.*:not([label=nightlight])',
-          sub_combine_lights: 'when-on',
+          sub_buttons: [],
+          sub_combine_lights: false,
           inline_buttons: [
             'area.temperature_entity_id',
             'area.humidity_entity_id',
